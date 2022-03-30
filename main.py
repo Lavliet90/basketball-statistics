@@ -1,3 +1,4 @@
+import click
 import requests
 
 def team_name():
@@ -31,21 +32,21 @@ def team_name():
         else:
             print('Error from API')
 
-    print('Southeast')
+    click.echo(click.style('Southeast', fg='green'))
     for team in southeast_teams:
         print(f'    {team}')
-    print('Southwest')
+    click.echo(click.style('Southwest', fg='green'))
     for team in southwest_teams:
         print(f'    {team}')
-    print('Atlantic')
+    click.echo(click.style('Atlantic', fg='green'))
     for team in atlantic_teams:
         print(f'    {team}')
-    print('Central')
+    click.echo(click.style('Central', fg='green'))
     for team in central_teams:
         print(f'    {team}')
-    print('Nortwest')
+    click.echo(click.style('Northwest', fg='green'))
     for team in northwest_teams:
         print(f'    {team}')
-    print('Pacific')
+    click.echo(click.style('Pacific', fg='green'))
     for team in pacific_teams:
         print(f'    {team}')

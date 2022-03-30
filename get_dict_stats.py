@@ -2,12 +2,12 @@ import requests
 import csv
 import json
 import sqlite3
-
+import click
 
 def all_team_stats(season):
+    click.clear()
     list_teams = []
     stats_teams = []
-    print('wait a minute...')
     teams_search = requests.get("https://www.balldontlie.io/api/v1/teams").json()
     for i in range(len(teams_search.get('data'))):
         list_teams.append((teams_search.get('data')[i].get('full_name')) + ' (' + (
@@ -24,36 +24,38 @@ def all_team_stats(season):
         stats_teams.append(team_for_list)
 
     page_max = requests.get("https://www.balldontlie.io/api/v1/games?seasons[]=" + str(season) + '&per_page=100').json()
-    for page in range((page_max.get('meta').get('total_pages')) + 1):
+    with click.progressbar(range((page_max.get('meta').get('total_pages')) + 1), label='Check teams statistics') as bar:
+        for page in bar:
 
-        team_stats = requests.get("https://www.balldontlie.io/api/v1/games?seasons[]=" + str(season) + '&page=' + str(
-            page) + '&per_page=100').json()
-        for j in range(len(team_stats.get('data'))):
-            if team_stats.get('data')[j].get('home_team_score') > team_stats.get('data')[j].get('visitor_team_score'):
-                for i in range(len(stats_teams)):
-                    if (team_stats.get('data')[j].get('home_team').get('full_name') + ' (' + team_stats.get('data')[
-                        j].get('home_team').get('abbreviation') + ')') == stats_teams[i].get('team_name'):
-                        stats_teams[i]['won_game_as_home_team'] += 1
-                    elif (team_stats.get('data')[j].get('visitor_team').get('full_name') + ' (' +
-                          team_stats.get('data')[j].get('visitor_team').get('abbreviation') + ')') == stats_teams[
-                        i].get('team_name'):
-                        stats_teams[i]['lost_game_as_home_team'] += 1
-                    else:
-                        continue
-            elif team_stats.get('data')[j].get('home_team_score') < team_stats.get('data')[j].get('visitor_team_score'):
-                for i in range(len(stats_teams)):
-                    if (team_stats.get('data')[j].get('home_team').get('full_name') + ' (' + team_stats.get('data')[
-                        j].get('home_team').get('abbreviation') + ')') == stats_teams[i].get('team_name'):
-                        stats_teams[i]['lost_game_as_visitor_team'] += 1
-                    elif (team_stats.get('data')[j].get('visitor_team').get('full_name') + ' (' +
-                          team_stats.get('data')[j].get('visitor_team').get('abbreviation') + ')') == stats_teams[
-                        i].get('team_name'):
-                        stats_teams[i]['won_game_as_visitor_team'] += 1
-                    else:
-                        continue
-            else:
-                continue
-    print('ready')
+            team_stats = requests.get("https://www.balldontlie.io/api/v1/games?seasons[]=" + str(season) + '&page=' + str(
+                page) + '&per_page=100').json()
+            for j in range(len(team_stats.get('data'))):
+                if team_stats.get('data')[j].get('home_team_score') > team_stats.get('data')[j].get('visitor_team_score'):
+                    for i in range(len(stats_teams)):
+                        if (team_stats.get('data')[j].get('home_team').get('full_name') + ' (' + team_stats.get('data')[
+                            j].get('home_team').get('abbreviation') + ')') == stats_teams[i].get('team_name'):
+                            stats_teams[i]['won_game_as_home_team'] += 1
+                        elif (team_stats.get('data')[j].get('visitor_team').get('full_name') + ' (' +
+                              team_stats.get('data')[j].get('visitor_team').get('abbreviation') + ')') == stats_teams[
+                            i].get('team_name'):
+                            stats_teams[i]['lost_game_as_home_team'] += 1
+                        else:
+                            continue
+                elif team_stats.get('data')[j].get('home_team_score') < team_stats.get('data')[j].get('visitor_team_score'):
+                    for i in range(len(stats_teams)):
+                        if (team_stats.get('data')[j].get('home_team').get('full_name') + ' (' + team_stats.get('data')[
+                            j].get('home_team').get('abbreviation') + ')') == stats_teams[i].get('team_name'):
+                            stats_teams[i]['lost_game_as_visitor_team'] += 1
+                        elif (team_stats.get('data')[j].get('visitor_team').get('full_name') + ' (' +
+                              team_stats.get('data')[j].get('visitor_team').get('abbreviation') + ')') == stats_teams[
+                            i].get('team_name'):
+                            stats_teams[i]['won_game_as_visitor_team'] += 1
+                        else:
+                            continue
+                else:
+                    continue
+        click.clear()
+    click.echo(click.style('We have collected data!', fg='green'))
     return stats_teams
 
 
