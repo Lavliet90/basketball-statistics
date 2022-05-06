@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 
 Hello!!!
 This application uses commands like:
