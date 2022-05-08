@@ -2,6 +2,7 @@ import click
 from get_dict_stats import all_team_stats, output_csv, output_json, output_sqlite, output_stdout
 from main import team_name
 from players_parametrs import players_param
+
 '''
 Hello!!!
 This application uses commands like:
@@ -14,12 +15,13 @@ This application uses commands like:
                                                                 strout to save, like json, csv, sqlite3
 '''
 
+
 @click.command()
 @click.argument('user-request', type=str)
 @click.option("--name", "-n", type=str, help='Enter the player\'s name(DOES NOT WORK). ')
 @click.option("--season", "-s", type=int, help='Enter the season year. And then the --output command')
-@click.option("--output", "-o", type=str, help= 'Specify the format: sqlite, json, csv, stdout. Example: python3 '
-                                                'script.py teams-stats --season 2017 --output stdout')
+@click.option("--output", "-o", type=str, help='Specify the format: sqlite, json, csv, stdout. Example: python3 '
+                                               'script.py teams-stats --season 2017 --output stdout')
 def team_group(user_request, name, season, output):
     if user_request == "grouped-teams":
         team_name()

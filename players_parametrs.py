@@ -3,13 +3,11 @@ import click
 
 name = 'Beasley'
 
-error = 'Not found'
-#
-# def players_param(name):
 
 def players_param(name):
     click.clear()
-    page_max = requests.get("https://www.balldontlie.io/api/v1/players?per_page=100").json()
+    start_url_api = 'https://www.balldontlie.io/api/v1/players?per_page=100'
+    page_max = requests.get(start_url_api).json()
     the_tallest_player = []
     the_heaviest_player = []
     players_list = []
@@ -17,32 +15,25 @@ def players_param(name):
     this_is_bad2 = 0
     with click.progressbar(range((page_max.get('meta').get('total_pages'))), label='Check layers statistics') as bar:
         for page in bar:
-            team_stats = requests.get("https://www.balldontlie.io/api/v1/players?per_page=100&page=" + str(page)).json()
-            for player in range(100):
-                if team_stats.get('data')[player].get('first_name') != name or \
-                        team_stats.get('data')[player].get('last_name') != name:
+            team_stats = requests.get(start_url_api + "&page=" + str(page)).json()
+            for player in team_stats.get('data'):
+                if player.get('first_name') != name or \
+                        player.get('last_name') != name:
                     click.clear()
                     return print('\nThe tallest player: Not found\nThe heaviest player: Not found')
                 else:
-                    if team_stats.get('data')[player].get('height_feet') != None and \
-                            team_stats.get('data')[player].get('weight_feet') != None:
-                        the_tallest_player.append({'name': str(team_stats.get('data')[player].get('first_name') +
-                                                               team_stats.get('data')[player].get('last_name')),
-                                                   'height': float(
-                                                       team_stats.get('data')[player]['height_feet'] * 30.48 / 100 +
-                                                       team_stats.get('data')[player]['height_inches'] * 2.54 / 100)})
-                        the_heaviest_player.append({'name': str(team_stats.get('data')[player].get('first_name') +
-                                                                team_stats.get('data')[player].get('last_name')),
-                                                    'weight': int(team_stats.get('data')[player]['height_feet'] * 0,
-                                                                  453592)})
+                    if player.get('height_feet') != None and player.get('weight_feet') != None:
+                        the_tallest_player.append({'name': str(player.get('first_name') + player.get('last_name')),
+                                                   'height': float(player['height_feet'] * 30.48 / 100 +
+                                                                   player['height_inches'] * 2.54 / 100)})
+                        the_heaviest_player.append({'name': str(player.get('first_name') + player.get('last_name')),
+                                                    'weight': int(player['height_feet'] * 0.453592)})
                     else:
                         this_is_bad = 1
 
-                    if team_stats.get('data')[player].get('weight_pounds') != None:
-                        the_heaviest_player.append({'name': str(team_stats.get('data')[player].get('first_name') +
-                                                                team_stats.get('data')[player].get('last_name')),
-                                                    'weight': int(team_stats.get('data')[player]['weight_pounds'] * 0,
-                                                                  453592)})
+                    if player.get('weight_pounds') != None:
+                        the_heaviest_player.append({'name': str(player.get('first_name') + player.get('last_name')),
+                                                    'weight': int(player['weight_pounds'] * 0.453592)})
                     else:
                         this_is_bad2 = 1
     click.clear()
@@ -52,7 +43,8 @@ def players_param(name):
         print('\nThe tallest player: ')
         for player in range(len(the_tallest_player)):
             if the_tallest_player[0].get('height') == the_tallest_player[player].get('height'):
-                print(the_tallest_player[player].get('name') + ' ' + the_tallest_player[player].get('height') + 'meters')
+                print(
+                    the_tallest_player[player].get('name') + ' ' + the_tallest_player[player].get('height') + 'meters')
     else:
         print('\nThe tallest player: Not found')
 
