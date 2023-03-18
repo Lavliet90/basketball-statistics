@@ -11,8 +11,9 @@ def all_team_stats(season):
     click.clear()
     teams_search = requests.get("https://www.balldontlie.io/api/v1/teams").json()
 
-    list_teams = [((team.get('full_name')) + ' (' + (team.get('abbreviation')) + ')')
-                  for team in teams_search.get('data')]
+    list_teams = [
+        (team.get('full_name')) + ' (' + (team.get('abbreviation')) + ')' for team in teams_search.get('data')
+    ]
     stats_teams = [{"team_name": team,
                     'won_game_as_home_team': 0,
                     'won_game_as_visitor_team': 0,
@@ -97,8 +98,15 @@ def output_sqlite(dict_stasts):
 
 def output_stdout(dict_stasts):
     for team_stats in dict_stasts:
-        print(team_stats.get('team_name'))
-        print('     won game as home team: ' + str(team_stats.get('won_game_as_home_team')))
-        print('     won game as visitor team: ' + str(team_stats.get('won_game_as_visitor_team')))
-        print('     lost game as home team: ' + str(team_stats.get('lost_game_as_home_team')))
-        print('     lost game as visitor team: ' + str(team_stats.get('lost_game_as_visitor_team')))
+        print("{}\n"
+              "    won game as home team: {}\n"
+              "    won game as visitor team: {}\n"
+              "    lost game as home team: {}\n"
+              "    lost game as visitor team: {}\n".format(
+            team_stats['team_name'],
+            team_stats['won_game_as_home_team'],
+            team_stats['won_game_as_visitor_team'],
+            team_stats['lost_game_as_home_team'],
+            team_stats['lost_game_as_visitor_team']
+            )
+        )
